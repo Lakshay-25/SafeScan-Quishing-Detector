@@ -42,7 +42,6 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
 ## 🧠 System Architecture
 
 ```mermaid
-<<<<<<< HEAD
 flowchart LR
     A[User Browser] -->|Upload QR / Webcam| B[Flask Backend]
     B --> C["QR Decoder (pyzbar + PIL)"]
@@ -51,8 +50,6 @@ flowchart LR
     E -->|Scaled Features| F["Logistic Regression Model"]
     F -->|P(Phishing)| G["Decision Layer (Safe / Suspicious / Phishing)"]
     G --> H[Result Page]
-=======
->>>>>>> 484eb5417ac47b4b14994465954c7a9765b0e414
 
 flowchart TD
     A[Dataset (PhiUSIIL)] --> B[Cleaning and Preprocessing]
