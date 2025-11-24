@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeScan | Analysis Report</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved"></i> SafeScan
+            </div>
+            <p class="subtitle">Analysis Report</p>
+        </header>
+
+        {% if error %}
+        <!-- Error State -->
+        <div class="scanner-card result-card error-state">
+            <div class="status-icon-wrapper error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2>Analysis Failed</h2>
+            <p class="result-message">{{ error }}</p>
+            <a href="{{ url_for('index') }}" class="action-btn">
+                <i class="fa-solid fa-arrow-left"></i> Try Again
+            </a>
+        </div>
+        {% else %}
+
+        <!-- Logic to determine styling -->
+        {% set label_lower = label.lower() %}
+        {% if "phishing" in label_lower %}
+            {% set status_class = "danger" %}
+            {% set icon_class = "fa-radiation" %}
+            {% set status_text = "Phishing Detected" %}
+            {% set sub_text = "This URL is highly dangerous. Do not visit." %}
+        {% elif "safe" in label_lower %}
+            {% set status_class = "success" %}
+            {% set icon_class = "fa-check-circle" %}
+            {% set status_text = "Safe URL" %}
+            {% set sub_text = "This URL appears legitimate." %}
+        {% else %}
+            {% set status_class = "warning" %}
+            {% set icon_class = "fa-circle-exclamation" %}
+            {% set status_text = "Suspicious URL" %}
+            {% set sub_text = "Proceed with caution. The URL shows mixed signals." %}
+        {% endif %}
+
+        <!-- Result Card -->
+        <div class="scanner-card result-card">
+
+            <!-- Status Header -->
+            <div class="result-header {{ status_class }}">
+                <div class="status-icon-wrapper">
+                    <i class="fa-solid {{ icon_class }}"></i>
+                </div>
+                <h2>{{ status_text }}</h2>
+                <p>{{ sub_text }}</p>
+
+                {% if is_trusted %}
+                <div class="trusted-badge">
+                    <i class="fa-solid fa-certificate"></i> Verified Safe Domain
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Content Body -->
+            <div class="result-body">
+
+                <!-- Decoded URL -->
+                <div class="info-group">
+                    <label>Decoded URL</label>
+                    <div class="url-box">
+                        {{ url }}
+                    </div>
+                </div>
+
+                <!-- AI Analysis Stats -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <label>AI Confidence</label>
+                        <span class="stat-value">{{ "%.1f"|format(confidence * 100) }}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Risk Score</label>
+                        <div class="risk-meter-container">
+                            <div class="risk-meter-bar" style="width: {{ prob * 100 }}%; background: var(--{{ status_class }}-color);"></div>
+                        </div>
+                        <span class="stat-sub">{{ "%.2f"|format(prob * 100) }}% / 100%</span>
+                    </div>
+                </div>
+
+                <!-- Scanned Image Preview -->
+                {% if qr_image %}
+                <div class="info-group">
+                    <label>Scanned Input</label>
+                    <div class="qr-preview">
+                        <img src="{{ url_for('static', filename=qr_image) }}" alt="Scanned QR">
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Detailed Features (Optional/Collapsible) -->
+                 <!--
+                {% if features %}
+                <div class="features-section">
+                    <h4>Technical Analysis</h4>
+                    <div class="features-grid">
+                        {% for name, value in features.items() %}
+                        <div class="feature-pill">
+                            <span>{{ name }}:</span> <strong>{{ value }}</strong>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                -->
+
+            </div>
+
+            <!-- Actions -->
+            <div class="result-actions">
+                <a href="{{ url_for('index') }}" class="secondary-btn">
+                    <i class="fa-solid fa-qrcode"></i> Scan Another
+                </a>
+                {% if status_class == "success" %}
+                <a href="{{ url }}" target="_blank" class="action-btn" style="background-color: var(--success-color);">
+                    Visit Site <i class="fa-solid fa-external-link-alt"></i>
+                </a>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endif %}
+
+        <footer class="footer">
+            <p>&copy; 2025 SafeScan Project. AI predictions may vary.</p>
+        </footer>
+    </div>
+
+</body>
+</html>

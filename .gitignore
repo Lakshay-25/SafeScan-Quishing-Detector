@@ -1,0 +1,46 @@
+
+---
+
+## 🧹 4. `.gitignore`
+
+Save as `.gitignore` in the root.
+
+```gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.h5
+*.keras
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDEs / Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & temp files
+logs/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model artifacts (optional, you may want to keep them)
+models/*.tmp
+models/*.bak
+
+# Uploads
+static/uploads/*
+!static/uploads/.gitkeep
