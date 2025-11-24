@@ -42,29 +42,6 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
 ## 🧠 System Architecture
 
 ```mermaid
-flowchart LR
-    A[User Browser] -->|Upload QR / Webcam| B[Flask Backend]
-    B --> C["QR Decoder (pyzbar + PIL)"]
-    C -->|Decoded URL| D["URL Feature Extractor"]
-    D -->|16 Features| E["Scaler (StandardScaler)"]
-    E -->|Scaled Features| F["Logistic Regression Model"]
-    F -->|P(Phishing)| G["Decision Layer (Safe / Suspicious / Phishing)"]
-    G --> H[Result Page]
-
-flowchart TD
-    A[Dataset (PhiUSIIL)] --> B[Cleaning and Preprocessing]
-    B --> C[Feature Engineering (16 Lexical Features)]
-    C --> D[Train/Validation Split]
-    D --> E[Scaling (StandardScaler)]
-    E --> F1[Train ANN]
-    E --> F2[Train Logistic Regression]
-    E --> F3[Train Random Forest]
-    F1 --> G[Evaluate Models]
-    F2 --> G
-    F3 --> G
-    G --> H[Select Best Model (Logistic Regression)]
-    H --> I[Deploy Model in Flask App]
-
 SafeScan-Quishing-Detector/
 │
 ├─ app.py
