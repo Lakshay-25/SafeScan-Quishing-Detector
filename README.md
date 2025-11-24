@@ -41,7 +41,6 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
 
 ## 🧠 System Architecture
 
-```mermaid
 SafeScan-Quishing-Detector/
 │
 ├─ app.py
@@ -73,7 +72,8 @@ SafeScan-Quishing-Detector/
 ├─ README.md
 ├─ LICENSE
 └─ requirements.txt
-```
+
+
 
 # 📊 Dataset & Labels
 Dataset: PhiUSIIL Phishing URL Dataset (Kaggle)
