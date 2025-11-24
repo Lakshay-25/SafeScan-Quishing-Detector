@@ -86,3 +86,7 @@ timestamp,image_path,decoded_url,model_used,prob_malicious,label
 2025-11-24T14:24:44.066575,C:\Users\laksh\PycharmProjects\Safescan-QRcode_scanner\static\uploads\QRcode2.jpg,https://scan.page/jiS3bQ,lr_url,0.9863661752084911,Phishing URL
 2025-11-24T14:24:57.469093,C:\Users\laksh\PycharmProjects\Safescan-QRcode_scanner\static\uploads\qr_04_benign_short2.png,https://tinyurl.com/benign1,lr_url,0.9932139125176066,Suspicious URL
 2025-11-24T14:25:10.189486,C:\Users\laksh\PycharmProjects\Safescan-QRcode_scanner\static\uploads\qr_01_benign_short.png,https://bit.ly/3GfZ1A,lr_url,0.9892144242967216,Suspicious URL
+2025-11-24T16:13:48.111676,C:\Users\laksh\PycharmProjects\Safescan-QRcode_scanner\static\uploads\qr_02_benign_medium.png,https://github.com/openai/gpt-3,lr_url,0.0,Safe URL
+2025-11-24T16:14:13.838658,,https://docs.python.org/3/page-106,lr_url,0.0,Safe URL
+2025-11-24T16:15:04.808071,C:\Users\laksh\PycharmProjects\Safescan-QRcode_scanner\static\uploads\qr_03_benign_long.png,https://www.example-long-benign-domain.com/path/to/resource12345,lr_url,0.9999999999998255,Phishing URL
+2025-11-24T16:15:13.068761,C:\Users\laksh\PycharmProjects\Safescan-QRcode_scanner\static\uploads\qr_04_benign_short2.png,https://tinyurl.com/benign1,lr_url,0.9932139125176066,Suspicious URL
