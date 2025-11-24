@@ -13,17 +13,17 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
 
 ## 🚀 Features
 
-### 🔍 **QR Code Processing**
+### 🔍 QR Code Processing
 - Upload QR image  
 - OR scan in real-time using device **webcam**
 - Decodes QR → URL using **pyzbar + Pillow**
 
-### 🧠 **Machine Learning URL Analysis**
+### 🧠 Machine Learning URL Analysis
 - Extracts **16 lexical URL features**
 - Uses trained ML models (Logistic Regression + ANN)
-- Outputs **P(phishing)** and classification
+- Outputs **P(phishing)** and final classification
 
-### 🛡️ **Security Enhancements**
+### 🛡️ Security Enhancements
 - Built-in **trusted whitelist** (Google, GitHub, OpenAI, etc.)
 - Automatic downgrading of URL shorteners (bit.ly, tinyurl, etc.)
 - Risk rating badges:
@@ -31,8 +31,8 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
   - 🟡 Medium risk
   - 🟢 Low risk
 
-### 🎨 **Modern Web UI**
-- Clean UI with dark theme  
+### 🎨 Modern Web UI
+- Clean dark-themed UI  
 - Risk badges, model confidence, feature table  
 - QR preview  
 - Responsive webcam scanning  
@@ -44,26 +44,26 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
 ```mermaid
 flowchart LR
     A[User Browser] -->|Upload QR / Webcam| B[Flask Backend]
-    B --> C[QR Decoder<br>(pyzbar + PIL)]
-    C -->|URL| D[URL Feature Extractor]
-    D -->|16 Features| E[Scaler]
-    E -->|Scaled| F[Logistic Regression Model]
-    F -->|P(Phishing)| G[Decision Layer]
+    B --> C["QR Decoder (pyzbar + PIL)"]
+    C -->|Decoded URL| D["URL Feature Extractor"]
+    D -->|16 Features| E["Scaler (StandardScaler)"]
+    E -->|Scaled Features| F["Logistic Regression Model"]
+    F -->|P(Phishing)| G["Decision Layer (Safe / Suspicious / Phishing)"]
     G --> H[Result Page]
 
 flowchart TD
-    A[Dataset (PhiUSIIL)] --> B[Cleaning & Preprocessing]
-    B --> C[Feature Engineering<br>16 Lexical Features]
+    A[Dataset (PhiUSIIL)] --> B[Cleaning and Preprocessing]
+    B --> C[Feature Engineering (16 Lexical Features)]
     C --> D[Train/Validation Split]
     D --> E[Scaling (StandardScaler)]
     E --> F1[Train ANN]
     E --> F2[Train Logistic Regression]
     E --> F3[Train Random Forest]
-    F1 --> G[Evaluate]
+    F1 --> G[Evaluate Models]
     F2 --> G
     F3 --> G
-    G --> H[Select Best Model<br>(Logistic Regression)]
-    H --> I[Deploy in Flask App]
+    G --> H[Select Best Model (Logistic Regression)]
+    H --> I[Deploy Model in Flask App]
 
 SafeScan-Quishing-Detector/
 │
@@ -84,7 +84,8 @@ SafeScan-Quishing-Detector/
 │   └─ result.html
 │
 ├─ static/
-│   └─ css/style.css
+│   └─ css/
+│       └─ style.css
 │
 ├─ datasets/
 │   └─ phiusiil_with_qr_minimal.csv
@@ -97,83 +98,171 @@ SafeScan-Quishing-Detector/
 └─ requirements.txt
 ```
 
+# 📊 Dataset & Labels
+Dataset: PhiUSIIL Phishing URL Dataset (Kaggle)
 
-
-PhiUSIIL Phishing URL Dataset
-Label meaning in dataset:
+Original labels:
 1 → Legitimate
 0 → Phishing
+In this project, we map to:
+1 → Phishing (y_phish = 1)
+0 → Safe / Legitimate (y_phish = 0)
+This mapping is used consistently for ML training and evaluation.
 
-Mapped internally as:
-1 = phishing
-0 = safe
+# 🔬 Feature Engineering (16 Lexical Features)
 
-🔬 Feature Engineering (16 Lexical Features)
-Examples:
-URL length
-Number of dots / hyphens
-Presence of IP address
-URL entropy
-HTTPS flag
-Token count
-Shortener detection
-Extracted using utils/features.py.
+- For each URL, we extract string-based (lexical) features without visiting the site, such as:
+- url_length – total length of URL
+- hostname_length – length of domain/hostname
+- path_length – length of path /a/b/c
+- num_dots – number of .
+- num_hyphens – number of -
+- num_digits – count of numeric characters
+- num_special_chars – count of @ # ? % = & _
+- num_subdomains – number of subdomain levels
+- has_https – 1 if URL starts with https://, else 0
+- https_in_domain – 1 if "https" appears inside domain name (often suspicious)
+- contains_ip – 1 if IP address used instead of hostname
+- contains_at – 1 if @ appears in URL
+- contains_double_slash – extra // (often used to obfuscate)
+- url_entropy – Shannon entropy (randomness/obfuscation)
+- url_token_count – tokens when splitting on . / ? = & _ -
+- is_shortener – 1 if domain is a known shortener (bit.ly, tinyurl, t.co, etc.)
+- Implemented in utils/features.py.
 
-🧮 Models Trained
-Model	               Purpose	                Notes
-ANN (Keras)	           URL classification	    High accuracy, but overconfident on unseen URLs
-Logistic Regression    Final production model	Best real-world behavior
-Random Forest	       Feature importance	    Optional
+# 🧮 Models Trained
 
-🎯 Final Model
+We trained and compared multiple models on the URL features:
+
+| Model               | Purpose                    | Notes                                          |
+| ------------------- | -------------------------- | ---------------------------------------------- |
+| ANN (Keras)         | URL classification         | High accuracy but overconfident on some URLs   |
+| Logistic Regression | **Final production model** | More stable, interpretable, better calibration |
+| Random Forest       | Feature importance         | Used mainly for analysis and comparison        |
+
+# 🎯 Final Chosen Model
+
 Logistic Regression + StandardScaler
-→ Best balance of stability, speed, generalization.
+- Good accuracy (~96–97% on validation)
+- Fast and simple
+- Well-behaved on real-world URLs and QR tests
 
-```
+# 🖥️ Running SafeScan Locally
+### 1️⃣ Create Virtual Environment
+- python -m venv .venv
+### Windows:
+- .venv\Scripts\activate
+### macOS / Linux:
+- source .venv/bin/activate
 
-🖥️ Running SafeScan Locally 
-1️⃣ Create Virtual Environment
+# 2️⃣ Install Requirements
+- pip install -r requirements.txt
+- (Make sure requirements.txt includes Flask, scikit-learn, numpy, pandas, pyzbar, Pillow, tensorflow, tldextract, etc.)
 
-python -m venv .venv
-source .venv/bin/activate   # macOS/Linux
-.venv\Scripts\activate      # Windows
-
-2️⃣ Install Requirements
-pip install -r requirements.txt
-
-3️⃣ Run the App
+# 3️⃣ Run the App
 python app.py
 
-Open browser:
+Then open in browser:
 http://127.0.0.1:5000/
 
-🔐 Security Logic (Decision Layer)
-Thresholds
-SAFE ≤ 0.25
-PHISH ≥ 0.85
-Else: Suspicious
+### You can now:
 
-Whitelist Check
-Trusted domains auto-safe:
-google.com
-github.com
-openai.com
-microsoft.com
-etc.
-Shortener Rule
+Upload QR images
 
-If URL is shortened → classify as at least Suspicious.
+Scan QR codes via webcam
 
-🧑‍💻 My Personal Contributions
-I implemented:
-Full ML pipeline (cleaning → features → training → evaluation)
-Feature engineering (16 URL features)
-ANN model and Logistic Regression model
-Model saving/loading with joblib + Keras
-Flask backend (/ & /analyze )
-Webcam QR scanning (JavaScript + getUserMedia)
-Result page UI with risk badges & trusted indicators
-Whitelist + shortener rule
-Debugging, testing, and real QR verification
-Complete documentation and GitHub setup
-```
+See the URL classification & analysis
+
+# 🔐 Security Logic (Decision Layer)
+## Thresholds
+
+The Logistic Regression model outputs P(phishing).
+We apply thresholds:
+
+- P(phishing) ≤ 0.25 → ✅ Safe URL
+
+- P(phishing) ≥ 0.85 → ❌ Phishing URL
+
+- Otherwise → ⚠️ Suspicious URL
+
+## Whitelist Check
+
+Certain well-known domains are treated as safe even if the model is unsure, e.g.:
+
+- google.com
+
+- github.com
+
+- openai.com
+
+- microsoft.com
+
+- wikipedia.org
+
+- etc.
+
+If the URL’s host is in the whitelist, it is marked as Safe URL and a “Trusted Domain” badge is shown on the result page.
+
+## Shortener Rule
+
+If is_shortener == 1 (e.g. bit.ly, tinyurl.com, etc.):
+
+- URL is treated as at least Suspicious
+
+- Even if the model predicts safe, it will be downgraded to Suspicious URL, because link shorteners hide the true destination.
+
+# 🧑‍💻 My Personal Contributions
+
+In this project, I implemented:
+
+- Selection and understanding of the Quishing (QR phishing) problem.
+
+- Data preparation using the PhiUSIIL Phishing URL Dataset.
+
+- Full ML pipeline:
+
+- Data cleaning
+
+- Train/validation split
+
+- Feature extraction (16 lexical features)
+
+- Model training and hyperparameter tuning
+
+- Evaluation using accuracy, F1-score, and confusion matrix.
+
+- Training multiple models:
+
+- ANN (Keras)
+
+- Logistic Regression (final model)
+
+- Random Forest (feature importance analysis)
+
+- Model saving/loading with joblib and Keras.
+
+- Development of the Flask web application:
+
+- Routes for / and /analyze
+
+- Handling file uploads and webcam captures (base64 images)
+
+- QR code decoding using pyzbar and PIL
+
+- Integrating ML predictions into the web pipeline.
+
+- Creating the frontend UI:
+
+- index.html with upload + webcam scanner
+
+- result.html with risk badges, confidence score, and feature table
+
+- Implementing:
+
+- Whitelist logic for trusted domains
+
+- Shortener handling as suspicious
+
+- Logging of predictions for debugging
+
+- Writing the documentation and preparing the project for GitHub.
