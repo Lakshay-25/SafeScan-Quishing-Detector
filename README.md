@@ -32,7 +32,7 @@ SafeScan helps protect users from QR-based phishing attacks — a growing cyber 
   - 🟢 Low risk
 
 ### 🎨 Modern Web UI
-- Clean dark-themed UI  
+- Clean light-themed UI  
 - Risk badges, model confidence, feature table  
 - QR preview  
 - Responsive webcam scanning  
