@@ -77,6 +77,7 @@ SafeScan-Quishing-Detector/
 
 # 📊 Dataset & Labels
 Dataset: PhiUSIIL Phishing URL Dataset (Kaggle)
+https://www.kaggle.com/datasets/ndarvind/phiusiil-phishing-url-dataset
 
 Original labels:
 1 → Legitimate
